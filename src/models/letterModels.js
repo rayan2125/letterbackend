@@ -16,6 +16,10 @@ const Letter = sequelize.define("Letter", {
         type: DataTypes.TEXT,  // Stores the letter text
         allowNull: false,
     },
+    letterUrl: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     userId: {
         type: DataTypes.UUID,
         allowNull: false,
@@ -23,6 +27,7 @@ const Letter = sequelize.define("Letter", {
             model: User,
             key: "id",
         },
+        
         onDelete: "CASCADE",
     },
 });

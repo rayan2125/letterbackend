@@ -14,9 +14,9 @@ const setAuthCredentials = (accessToken) => {
 
 // 🔹 Upload a new document to Google Drive
 export const uploadToGoogleDrive = async (accessToken, content) => {
-   
+   console.log("jjsjsjsj")
     const { data } = await oauth2Client.getTokenInfo(accessToken);
-console.log("Token Info:", data);
+
   try {
     setAuthCredentials(accessToken);
 

@@ -19,7 +19,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: {
-      secure: process.env.NODE_ENV === "production", 
+      secure: process.env.NODE_ENV === "production",
       httpOnly: true,
       sameSite: "Lax",
     },
@@ -54,7 +54,7 @@ async function startServer() {
 // https://letterbackend.onrender.com
 // Google OAuth Routes
 app.get("/auth/google", passport.authenticate("google", {
-  scope: ["profile", "email","https://www.googleapis.com/auth/drive.file",]
+  scope: ["profile", "email", "https://www.googleapis.com/auth/drive.file",]
   , accessType: 'offline',
   prompt: 'consent'
 
@@ -64,23 +64,36 @@ app.get("/auth/google/callback", async (req, res) => {
   const { code } = req.query;
 
   try {
-    // Exchange authorization code for access token
-    const { tokens } = await oauth2Client.getToken({code,
-      redirect_uri: "https://letterbackend.onrender.com/auth/google/callback",
-    });
+    // Exchange authorization code for tokens
+    const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
-console.log(tokens)
-    // Retrieve user info from Google
+
+    // Fetch user info from Google
     const response = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
-
     });
-  console.log("cominggggg",response)
+
     const googleUser = await response.json();
 
     if (!googleUser.email) {
-   
       return res.redirect("http://localhost:3000/auth/signup");
+    }
+
+    // Check if the user already exists in the database
+    let user = await User.findOne({ where: { email: googleUser.email } });
+
+    if (!user) {
+      user = await User.create({
+        name: googleUser.name,
+        email: googleUser.email,
+        googleRefreshToken: tokens.refresh_token,
+      });
+    } else {
+      user.googleAccessToken = tokens.access_token;
+      if (tokens.refresh_token) {
+        user.googleRefreshToken = tokens.refresh_token;
+      }
+      await user.save();
     }
 
     // Store access token in cookies
@@ -90,10 +103,10 @@ console.log(tokens)
       sameSite: "Strict",
     });
 
-    // Redirect to dashboard if user exists
+    // Redirect to dashboard
     res.redirect("http://localhost:3000/dashboard");
   } catch (error) {
-   
+    console.error("Google Auth Error:", error);
     res.redirect("http://localhost:3000/auth/signup");
   }
 });
@@ -114,6 +127,7 @@ app.get("/api/user", (req, res) => {
 
 
 app.get("/logout", (req, res) => {
+  console.log(req)
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ message: "Logout failed", error: err });

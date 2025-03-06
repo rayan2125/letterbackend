@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const ensureAuthenticated = async (req, res, next) => {
     const token = req.headers.authorization?.split(" ")[1];
-
+// console.log(toke)
     // console.log("is coming:::::", token);
 
     if (!token) {
@@ -15,13 +15,14 @@ export const ensureAuthenticated = async (req, res, next) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        // console.log("Google User Verified:", data);
+    
         
         req.user = {
             id: data.sub, // Google user ID
             email: data.email,
             name: data.name,
             picture: data.picture,
+            googleAccessToken: token
         };
 
         next();
