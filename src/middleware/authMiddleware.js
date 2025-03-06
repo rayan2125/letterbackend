@@ -16,7 +16,7 @@ export const ensureAuthenticated = async (req, res, next) => {
         });
 
         // console.log("Google User Verified:", data);
-// 
+        
         req.user = {
             id: data.sub, // Google user ID
             email: data.email,

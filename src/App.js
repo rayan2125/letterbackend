@@ -29,8 +29,8 @@ app.use(
     credentials: true,
   })
 );
-app.use('/api',router)
-app.use('/api',authRouter)
+app.use('/api', router)
+app.use('/api', authRouter)
 // PostgreSQL Connection
 async function startServer() {
   try {
@@ -48,32 +48,30 @@ async function startServer() {
 }
 
 // Google OAuth Routes
-app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+app.get("/auth/google", passport.authenticate("google", {
+  scope: ["profile", "email","https://www.googleapis.com/auth/drive.file",]
+  , accessType: 'offline',
+  prompt: 'consent'
+
+}));
 
 app.get("/auth/google/callback", async (req, res) => {
   const { code } = req.query;
-console.log("query coming ::::",code)
+
   try {
     // Exchange authorization code for access token
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
-
+console.log(tokens)
     // Retrieve user info from Google
     const response = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     });
-    // console.log(response,"llllll")
+  console.log("cominggggg",response)
     const googleUser = await response.json();
-// console.log(googleUser)
-    if (!googleUser.email) {
-      console.error("Google OAuth: No email received");
-      return res.redirect("http://localhost:3000/auth/signup");
-    }
 
-    // Check if user exists in the database
-    const user = await User.findOne({ where: { email: googleUser.email } });
-    if (!user) {
-      console.log("User does not exist, redirecting to signup...");
+    if (!googleUser.email) {
+   
       return res.redirect("http://localhost:3000/auth/signup");
     }
 
@@ -87,7 +85,7 @@ console.log("query coming ::::",code)
     // Redirect to dashboard if user exists
     res.redirect("http://localhost:3000/dashboard");
   } catch (error) {
-    console.error("OAuth Error:", error);
+   
     res.redirect("http://localhost:3000/auth/signup");
   }
 });
