@@ -15,14 +15,19 @@ app.use(express.json());
 // Session middleware
 app.use(
   session({
-    secret: "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",
+    secret: "hshnanajnsnsjsj",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false },
+    cookie: {
+      secure: process.env.NODE_ENV === "production", 
+      httpOnly: true,
+      sameSite: "Lax",
+    },
   })
 );
+
 app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.session());
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -60,12 +65,15 @@ app.get("/auth/google/callback", async (req, res) => {
 
   try {
     // Exchange authorization code for access token
-    const { tokens } = await oauth2Client.getToken(code);
+    const { tokens } = await oauth2Client.getToken({code,
+      redirect_uri: "https://letterbackend.onrender.com/auth/google/callback",
+    });
     oauth2Client.setCredentials(tokens);
 console.log(tokens)
     // Retrieve user info from Google
     const response = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
+
     });
   console.log("cominggggg",response)
     const googleUser = await response.json();

@@ -19,6 +19,7 @@ passport.use(
         {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            
             callbackURL: "https://letterbackend.onrender.com/auth/google/callback",
             scope: [
                 "profile", // Access basic user profile info
