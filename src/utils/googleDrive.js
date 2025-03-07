@@ -4,7 +4,7 @@ import { google } from "googleapis";
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_REDIRECT_URI
+  process.env.NODE_ENV==="production"? process.env.PRODUCTION_URL:process.env.LOCAL_URL
 );
 
 // Function to set credentials
@@ -13,8 +13,7 @@ const setAuthCredentials = (accessToken) => {
 };
 
 // 🔹 Upload a new document to Google Drive
-export const uploadToGoogleDrive = async (accessToken, content) => {
-   console.log("jjsjsjsj")
+export const uploadToGoogleDrive = async (accessToken,title, content) => {
     const { data } = await oauth2Client.getTokenInfo(accessToken);
 
   try {
@@ -23,7 +22,7 @@ export const uploadToGoogleDrive = async (accessToken, content) => {
     const drive = google.drive({ version: "v3", auth: oauth2Client });
 
     const fileMetadata = {
-      name: "New Document",
+      name: title,
       mimeType: "application/vnd.google-apps.document",
     };
 
