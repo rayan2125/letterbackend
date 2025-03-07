@@ -1,11 +1,10 @@
 import axios from "axios";
 
 export const ensureAuthenticated = async (req, res, next) => {
-    const token = req.headers.authorization?.split(" ")[1];
-// console.log(token)
-console.log("Headers received:", req.headers);
+    const token = req.cookies?.accessToken; // Use req.cookies.accessToken
 
-    console.log("is coming:::::", token);
+    // console.log("Headers received:", req.headers);
+    // console.log("Access Token from Cookies:", token);
 
     if (!token) {
         return res.status(401).json({ message: "Unauthorized: No token provided" });
@@ -17,8 +16,6 @@ console.log("Headers received:", req.headers);
             headers: { Authorization: `Bearer ${token}` },
         });
 
-    
-        
         req.user = {
             id: data.sub, // Google user ID
             email: data.email,

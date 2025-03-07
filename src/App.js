@@ -9,6 +9,7 @@ import router from "./router/letterRoutes.js";
 import authRouter from "./router/authRouter.js";
 import jwt from "jsonwebtoken"
 import { oauth2Client } from "./auth.js";
+import cookieParser from "cookie-parser";
 const app = express();
 app.use(express.json());
 
@@ -25,7 +26,9 @@ app.use(
     },
   })
 );
-
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 // app.use(passport.session());
 app.use(
@@ -92,12 +95,14 @@ app.get("/auth/google/callback", async (req, res) => {
     }
 
     
-    res.cookie("aceessToken", tokens.access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+    res.cookie("accessToken", token, {
+      httpOnly: true,  // Prevent client-side access
+      secure: process.env.NODE_ENV === "production", // Set to true in production
+      sameSite: "Strict", 
+      maxAge: 60 * 60 * 1000, // 1 hour
     });
-  
+    
+    
     res.redirect("http://localhost:3000/dashboard");
   } catch (error) {
     console.error("Google Auth Error:", error);

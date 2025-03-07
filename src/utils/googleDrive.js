@@ -36,7 +36,6 @@ export const uploadToGoogleDrive = async (accessToken,title, content) => {
       media,
       fields: "id",
     });
-
     return `https://docs.google.com/document/d/${file.data.id}/edit`;
   } catch (error) {
     console.error("Error uploading document:", error);
