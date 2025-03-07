@@ -95,7 +95,7 @@ app.get("/auth/google/callback", async (req, res) => {
     }
 
     
-    res.cookie("accessToken", token, {
+    res.cookie("accessToken", tokens.access_token, {
       httpOnly: true,  // Prevent client-side access
       secure: process.env.NODE_ENV === "production", // Set to true in production
       sameSite: "Strict", 
