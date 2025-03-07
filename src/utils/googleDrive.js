@@ -76,9 +76,14 @@ export const deleteGoogleDriveFile = async (accessToken, fileId) => {
   try {
     setAuthCredentials(accessToken);
 
+    // Extract file ID if full URL is provided
+    const extractedFileId = fileId.includes("docs.google.com")
+      ? fileId.split("/d/")[1].split("/")[0]
+      : fileId;
+
     const drive = google.drive({ version: "v3", auth: oauth2Client });
 
-    await drive.files.delete({ fileId });
+    await drive.files.delete({ fileId: extractedFileId });
 
     return "File deleted successfully";
   } catch (error) {
@@ -86,9 +91,6 @@ export const deleteGoogleDriveFile = async (accessToken, fileId) => {
     throw error;
   }
 };
-// export const getAccessToken = async (code) => {
-//     const { tokens } = await oauth2Client.getToken(code);
-//     oauth2Client.setCredentials(tokens);
-//     return tokens; // Store these tokens for future API calls
-//   };
+
+
   
