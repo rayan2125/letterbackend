@@ -33,10 +33,13 @@ app.use(passport.initialize());
 // app.use(passport.session());
 app.use(
   cors({
-    origin:["http://localhost:3000", "https://your-frontend-domain.com"],
+    origin: "https://letterfornted.vercel.app",
     credentials: true,
+    methods: "GET,POST,PUT,DELETE,OPTIONS",
+    allowedHeaders: "Content-Type, Authorization",
   })
 );
+app.options("*", cors());
 app.use('/api', router)
 app.use('/api', authRouter)
 
@@ -61,7 +64,13 @@ app.get("/auth/google", passport.authenticate("google", {
   prompt: 'consent'
 
 }));
-
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://letterfornted.vercel.app");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
+  next();
+});
 app.get("/auth/google/callback", async (req, res) => {
   const { code } = req.query;
   try {
@@ -75,7 +84,7 @@ app.get("/auth/google/callback", async (req, res) => {
     const googleUser = await response.json();
 
     if (!googleUser.email) {
-      return res.redirect("http://localhost:3000/auth/signup");
+      return res.redirect("https://letterfornted.vercel.app/auth/signup");
     }
 
     let user = await User.findOne({ where: { email: googleUser.email } });
@@ -104,10 +113,10 @@ app.get("/auth/google/callback", async (req, res) => {
     
     
     
-    res.redirect("http://localhost:3000/dashboard");
+    res.redirect("https://letterfornted.vercel.app/dashboard");
   } catch (error) {
     console.error("Google Auth Error:", error);
-    res.redirect("http://localhost:3000/auth/signup");
+    res.redirect("https://letterfornted.vercel.app/auth/signup");
   }
 });
 
@@ -131,7 +140,7 @@ app.get("/logout", (req, res) => {
     if (err) {
       return res.status(500).json({ message: "Logout failed", error: err });
     }
-    res.clearCookie("connect.sid", { path: "http://localhost:3000/auth/signup"}); // Removes session cookie
+    res.clearCookie("connect.sid", { path: "https://letterfornted.vercel.app/auth/signup"}); // Removes session cookie
     res.json({ message: "Logged out successfully" });
   });
 });
