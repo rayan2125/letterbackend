@@ -67,7 +67,7 @@ app.get("/auth/google/callback", async (req, res) => {
     // Exchange authorization code for tokens
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
-
+console.log("token coming:::",tokens)
     // Fetch user info from Google
     const response = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
@@ -127,15 +127,15 @@ app.get("/api/user", (req, res) => {
 
 
 app.get("/logout", (req, res) => {
-  console.log(req)
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ message: "Logout failed", error: err });
     }
-    res.clearCookie("connect.sid", { path: "/" }); // Ensure session cookie is removed
-    res.json({ message: "Logged out successfully" }); // Send JSON response
+    res.clearCookie("connect.sid", { path: "http://localhost:3000/auth/signup"}); // Removes session cookie
+    res.json({ message: "Logged out successfully" });
   });
 });
+
 console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
 console.log("GOOGLE_CLIENT_SECRET:", process.env.GOOGLE_CLIENT_SECRET);
 
