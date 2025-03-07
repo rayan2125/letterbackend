@@ -136,6 +136,15 @@ app.get("/logout", (req, res) => {
     res.json({ message: "Logged out successfully" }); // Send JSON response
   });
 });
+console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
+console.log("GOOGLE_CLIENT_SECRET:", process.env.GOOGLE_CLIENT_SECRET);
+
+app.get('/debug-env', (req, res) => {
+  res.json({
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET
+  });
+});
 
 // Start Server
 startServer();
