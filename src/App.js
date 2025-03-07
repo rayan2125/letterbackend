@@ -33,7 +33,7 @@ app.use(passport.initialize());
 // app.use(passport.session());
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin:["http://localhost:3000", "https://your-frontend-domain.com"],
     credentials: true,
   })
 );
@@ -96,11 +96,12 @@ app.get("/auth/google/callback", async (req, res) => {
 
     
     res.cookie("accessToken", tokens.access_token, {
-      httpOnly: true,  // Prevent client-side access
-      secure: process.env.NODE_ENV === "production", // Set to true in production
-      sameSite: "Strict", 
+      httpOnly: true,
+      secure: true, // Always secure in production
+      sameSite: "None", // Required for cross-origin cookies
       maxAge: 60 * 60 * 1000, // 1 hour
     });
+    
     
     
     res.redirect("http://localhost:3000/dashboard");

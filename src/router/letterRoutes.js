@@ -45,8 +45,7 @@ router.post("/upload", ensureAuthenticated, async (req, res) => {
     }
 });
 
-// Update letter
-// Update letter
+
 router.put("/update/:id", ensureAuthenticated, async (req, res) => {
     try {
         const { content, title } = req.body;
