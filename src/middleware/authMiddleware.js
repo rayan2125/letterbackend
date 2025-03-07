@@ -3,7 +3,9 @@ import axios from "axios";
 export const ensureAuthenticated = async (req, res, next) => {
     const token = req.cookies?.accessToken; // Use req.cookies.accessToken
 
-    console.log("Headers received:", req.cookies);
+    console.log("Headers received:", req);
+    console.log("hshhshhs====",req.headers)
+    console.log("Headers cookies:", req.cookies);
     console.log("Access Token from Cookies:", token);
 
     if (!token) {
