@@ -36,7 +36,7 @@ app.use(
 );
 app.use('/api', router)
 app.use('/api', authRouter)
-// PostgreSQL Connection
+
 async function startServer() {
   try {
     await sequelize.authenticate();
@@ -51,8 +51,7 @@ async function startServer() {
     console.error("Database connection failed:", error);
   }
 }
-// https://letterbackend.onrender.com
-// Google OAuth Routes
+
 app.get("/auth/google", passport.authenticate("google", {
   scope: ["profile", "email", "https://www.googleapis.com/auth/drive.file",]
   , accessType: 'offline',
@@ -62,13 +61,10 @@ app.get("/auth/google", passport.authenticate("google", {
 
 app.get("/auth/google/callback", async (req, res) => {
   const { code } = req.query;
-
   try {
-    // Exchange authorization code for tokens
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
-console.log("token coming:::",tokens)
-    // Fetch user info from Google
+
     const response = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     });
@@ -79,7 +75,6 @@ console.log("token coming:::",tokens)
       return res.redirect("http://localhost:3000/auth/signup");
     }
 
-    // Check if the user already exists in the database
     let user = await User.findOne({ where: { email: googleUser.email } });
 
     if (!user) {
@@ -96,14 +91,13 @@ console.log("token coming:::",tokens)
       await user.save();
     }
 
-    // Store access token in cookies
-    res.cookie("authToken", tokens.access_token, {
+    
+    res.cookie("aceessToken", tokens.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
     });
-
-    // Redirect to dashboard
+  
     res.redirect("http://localhost:3000/dashboard");
   } catch (error) {
     console.error("Google Auth Error:", error);
@@ -136,15 +130,7 @@ app.get("/logout", (req, res) => {
   });
 });
 
-console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
-console.log("GOOGLE_CLIENT_SECRET:", process.env.GOOGLE_CLIENT_SECRET);
 
-app.get('/debug-env', (req, res) => {
-  res.json({
-    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET
-  });
-});
 
 // Start Server
 startServer();

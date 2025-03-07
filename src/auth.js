@@ -10,6 +10,7 @@ dotenv.config();
 export const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
+    // "http://localhost:8070/auth/google/callback"
     process.env.NODE_ENV==="production"? process.env.PRODUCTION_URL:process.env.LOCAL_URL
 );
 
@@ -19,14 +20,15 @@ passport.use(
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
             callbackURL:process.env.NODE_ENV==="production"? process.env.PRODUCTION_URL:process.env.LOCAL_URL,
+            // callbackURL:'http://localhost:8070/auth/google/callback',
             scope: [
-                "profile", // Access basic user profile info
-                "email", // Access user's email
-                "https://www.googleapis.com/auth/drive.file", // Allows creating and modifying files in Google Drive
-                "https://www.googleapis.com/auth/documents" // Allows editing Google Docs
+                "profile", 
+                "email", 
+                "https://www.googleapis.com/auth/drive.file", 
+                "https://www.googleapis.com/auth/documents" 
             ],
-            accessType: "offline", // Ensures refresh tokens are received
-            prompt: "consent", // Ensures user sees consent screen for refresh token
+            accessType: "offline", 
+            prompt: "consent", 
         },
         
         async (accessToken, refreshToken, profile, done) => {
