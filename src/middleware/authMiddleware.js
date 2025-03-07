@@ -2,8 +2,10 @@ import axios from "axios";
 
 export const ensureAuthenticated = async (req, res, next) => {
     const token = req.headers.authorization?.split(" ")[1];
-// console.log(toke)
-    // console.log("is coming:::::", token);
+// console.log(token)
+console.log("Headers received:", req.headers);
+
+    console.log("is coming:::::", token);
 
     if (!token) {
         return res.status(401).json({ message: "Unauthorized: No token provided" });
